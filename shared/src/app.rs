@@ -2,19 +2,22 @@ use crux_core::{render::Render, App};
 use crux_macros::Effect;
 use serde::{Deserialize, Serialize};
 
+static ANIMALS: [(&str, &str); 2] = [("crocodile", "🐊"), ("badger", "🦡")];
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Event {
-    None,
+    Scan,
+    Scanned(String),
 }
 
 #[derive(Default)]
 pub struct Model {
-    count: isize,
+    animal_id: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct ViewModel {
-    pub count: String,
+    pub animal_emoji: String,
 }
 
 #[cfg_attr(feature = "typegen", derive(crux_macros::Export))]
@@ -39,7 +42,29 @@ impl App for AnimalHunt {
 
     fn view(&self, model: &Self::Model) -> Self::ViewModel {
         ViewModel {
-            count: format!("Count is: {}", model.count),
+            animal_emoji: "?".to_string(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crux_core::testing::AppTester;
+
+    use crate::AnimalHunt;
+
+    use super::{Effect, Model, ViewModel};
+
+    #[test]
+    fn starts_with_no_animal() {
+        let model = Model { animal_id: None };
+        let app: AppTester<AnimalHunt, Effect> = Default::default();
+
+        let expected = ViewModel {
+            animal_emoji: "?".to_string(),
+        };
+        let actual = app.view(&model);
+
+        assert_eq!(actual, expected)
     }
 }
