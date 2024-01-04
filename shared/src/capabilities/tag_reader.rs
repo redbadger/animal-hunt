@@ -2,16 +2,20 @@ use crux_core::capability::{CapabilityContext, Operation};
 use crux_macros::Capability;
 use serde::{Deserialize, Serialize};
 
-// TODO add topics
-
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum TagReaderOperation {
     WriteUrl(String),
     ReadUrl,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum TagReaderOutput {
+    Url(String),
+    Written,
+}
+
 impl Operation for TagReaderOperation {
-    type Output = String;
+    type Output = TagReaderOutput;
 }
 
 #[derive(Capability)]
@@ -29,24 +33,24 @@ where
 
     pub fn read_url<F>(&self, make_event: F)
     where
-        F: Fn(String) -> Ev + Clone + Send + 'static,
+        F: Fn(TagReaderOutput) -> Ev + Clone + Send + 'static,
     {
         self.context.spawn({
             let context = self.context.clone();
 
             async move {
-                let url_string = context
+                let result = context
                     .request_from_shell(TagReaderOperation::ReadUrl)
                     .await;
 
-                context.update_app(make_event(url_string));
+                context.update_app(make_event(result));
             }
         })
     }
 
-    pub fn write_url(&self, url_string: &str, event: Ev)
+    pub fn write_url<F>(&self, url_string: &str, make_event: F)
     where
-        Ev: Send,
+        F: Fn(TagReaderOutput) -> Ev + Clone + Send + 'static,
     {
         self.context.spawn({
             let context = self.context.clone();
@@ -54,10 +58,10 @@ where
 
             async move {
                 context
-                    .notify_shell(TagReaderOperation::WriteUrl(url))
+                    .request_from_shell(TagReaderOperation::WriteUrl(url))
                     .await;
 
-                context.update_app(event);
+                context.update_app(make_event(TagReaderOutput::Written));
             }
         })
     }

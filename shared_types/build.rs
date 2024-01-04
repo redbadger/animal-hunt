@@ -1,5 +1,5 @@
 use crux_core::typegen::TypeGen;
-use shared::AnimalHunt;
+use shared::{AnimalHunt, Mode};
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -8,6 +8,7 @@ fn main() -> anyhow::Result<()> {
     let mut gen = TypeGen::new();
 
     gen.register_app::<AnimalHunt>()?;
+    gen.register_type::<Mode>()?;
 
     let output_root = PathBuf::from("./generated");
 
