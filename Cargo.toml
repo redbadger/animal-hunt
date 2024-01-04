@@ -1,0 +1,16 @@
+[workspace]
+members = ["shared", "shared_types"]
+resolver = "1"
+
+[workspace.package]
+authors = ["Red Badger Consulting Limited"]
+edition = "2021"
+repository = "https://github.com/redbadger/animal-hunt/"
+rust-version = "1.66"
+
+[workspace.dependencies]
+anyhow = "1.0.75"
+serde = "1.0.193"
+
+[workspace.metadata.bin]
+cargo-xcode = { version = "=1.7.0" }
