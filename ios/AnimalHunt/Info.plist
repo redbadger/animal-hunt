@@ -24,5 +24,7 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NFCReaderUsageDescription</key>
+	<string>Reads and writes NFC tags to use as animal tokens</string>
 </dict>
 </plist>

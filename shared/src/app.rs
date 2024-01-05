@@ -113,6 +113,10 @@ impl App for AnimalHunt {
                         Err(e) => panic!("Invalid url {e}"), // TODO error handling
                     }
                 }
+                Event::TagWritten(TagReaderOutput::Error(err))
+                | Event::ScannedUrl(TagReaderOutput::Error(err)) => {
+                    panic!("Error reading tag {err}")
+                }
                 Event::WriteTag(_)
                 | Event::TagWritten(_)
                 | Event::ScannedUrl(TagReaderOutput::Written) => {
@@ -127,6 +131,10 @@ impl App for AnimalHunt {
                 Event::WriteTag(animal) => {
                     let url = format!("https://{}/animal/{}", HOST, animal);
                     caps.tag_reader.write_url(&url, Event::TagWritten);
+                }
+                Event::TagWritten(TagReaderOutput::Error(err))
+                | Event::ScannedUrl(TagReaderOutput::Error(err)) => {
+                    panic!("Error writing tag {err}")
                 }
                 Event::Scan | Event::ScannedUrl(_) | Event::TagWritten(TagReaderOutput::Url(_)) => {
                     panic!("Invalid event for Configure mode");

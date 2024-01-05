@@ -14,6 +14,10 @@ targets:
     type: application
     platform: iOS
     deploymentTarget: "16.0"
+    entitlements:
+      path: AnimalHunt/AnimalHunt.entitlements
+      properties:
+        com.apple.developer.nfc.readersession.formats: ["NDEF", "TAG"]
     sources:
       - AnimalHunt
       - path: ../shared/src/shared.udl

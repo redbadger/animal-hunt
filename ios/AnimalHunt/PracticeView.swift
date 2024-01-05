@@ -22,10 +22,7 @@ struct PracticeView: View {
                 .frame(maxHeight: 40)
 
             Button {
-                // TODO update(.scan)
-                update(
-                    .scannedUrl(.url(( "https://animal-hunt.red-badger.com/animal/badger")))
-                )
+                update(.scan)
             } label: {
                 Text("Scan")
                     .font(.title)

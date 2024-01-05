@@ -19,9 +19,8 @@ struct ConfigureView: View {
                 }
             }
             .onChange(of: selectedAnimal) { animal in
-                if animal != nil {
-                    // TODO update(.writeTag(animal))
-                    update(.tagWritten(.written))
+                if let animal {
+                    update(.writeTag(animal))
                 }
             }
         }

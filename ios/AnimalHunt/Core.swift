@@ -23,10 +23,20 @@ class Core: ObservableObject {
     func processEffect(_ request: Request) {
         switch request.effect {
         case .render:
-            print("Render")
             view = try! .bincodeDeserialize(input: [UInt8](AnimalHunt.view()))
-        case let .tagReader(req):
-            print("Tag reader request", req)
+            return;
+        case let .tagReader(operation):
+            Task.init {
+                let output = await NFCCapability.process(operation)
+                let response = try! output.bincodeSerialize()
+
+                let effects = [UInt8](AnimalHunt.handleResponse(Data(request.uuid), Data(response)))
+
+                let requests: [Request] = try! .bincodeDeserialize(input: effects)
+                for request in requests {
+                    processEffect(request)
+                }
+            }
         }
     }   
 }

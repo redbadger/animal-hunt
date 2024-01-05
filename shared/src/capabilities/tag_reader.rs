@@ -12,6 +12,7 @@ pub enum TagReaderOperation {
 pub enum TagReaderOutput {
     Url(String),
     Written,
+    Error(String),
 }
 
 impl Operation for TagReaderOperation {
