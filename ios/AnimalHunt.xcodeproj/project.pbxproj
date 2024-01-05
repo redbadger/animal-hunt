@@ -1,0 +1,490 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5118A570EF1DCBBB68276C8B /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874B8EA9E22ED3C432F214BE /* RootView.swift */; };
+		7275D096B266775F36C57860 /* AnimalHuntApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF605E1934C7FE163361C7EC /* AnimalHuntApp.swift */; };
+		76B33116918A389254EF2F1D /* uniffi-bindgen in Resources */ = {isa = PBXBuildFile; fileRef = 62CCF4A11838C31389379E2F /* uniffi-bindgen */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		77ADFD9B2B485B3A004F8CD1 /* ConfigureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ADFD9A2B485B3A004F8CD1 /* ConfigureView.swift */; };
+		77ADFD9D2B485F14004F8CD1 /* PracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ADFD9C2B485F14004F8CD1 /* PracticeView.swift */; };
+		8F12402F6C22A6C14D378846 /* shared.udl in Sources */ = {isa = PBXBuildFile; fileRef = 07415664340CDEE3355A9A8C /* shared.udl */; };
+		CD1E92F95F890466D29E27C7 /* libshared_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED281E0947426D19FB3CFFE9 /* libshared_static.a */; };
+		CDA07C46E2CB5D58E31D798F /* SharedTypes in Frameworks */ = {isa = PBXBuildFile; productRef = 255E22EF7C6956A03CE8BCDF /* SharedTypes */; };
+		E81F87DFECCFFC630B6CD5DD /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB95AAECFBC7EA021D44EB1 /* Core.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		56D205D07FD808B748112C07 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.udl";
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 1;
+			name = "Generate FFI";
+			outputFiles = (
+				"$(PROJECT_DIR)/generated/$(INPUT_FILE_BASE).swift",
+				"$(PROJECT_DIR)/generated/$(INPUT_FILE_BASE)FFI.h",
+			);
+			outputFilesCompilerFlags = (
+			);
+			runOncePerArchitecture = 0;
+			script = "#!/bin/bash\nset -e\n\n# Skip during indexing phase in XCode 13+\nif [ \"$ACTION\" == \"indexbuild\" ]; then\n  echo \"Not building *.udl files during indexing.\"\n  exit 0\nfi\n\n# Skip for preview builds\nif [ \"$ENABLE_PREVIEWS\" = \"YES\" ]; then\n  echo \"Not building *.udl files during preview builds.\"\n  exit 0\nfi\n\ncd \"${INPUT_FILE_DIR}/..\"\n\"${BUILD_DIR}/debug/uniffi-bindgen\" generate \"src/${INPUT_FILE_NAME}\" --language swift --out-dir \"${PROJECT_DIR}/generated\"\n";
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXContainerItemProxy section */
+		770AFBFA2B481AD4009E7DD5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CFFC2D8029356A16B09E5B1 /* Shared */;
+			proxyType = 2;
+			remoteGlobalIDString = CA01C51694BE10F7F7FCAC5B;
+			remoteInfo = "shared-cdylib";
+		};
+		A8C132A54E305CA009095696 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CFFC2D8029356A16B09E5B1 /* Shared */;
+			proxyType = 2;
+			remoteGlobalIDString = CA0049BF7D4FFB09138082B7;
+			remoteInfo = "shared-staticlib";
+		};
+		B49CF779E5B350D5072C1C18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CFFC2D8029356A16B09E5B1 /* Shared */;
+			proxyType = 1;
+			remoteGlobalIDString = CA02FA85CE9E4296ADE0F606;
+			remoteInfo = "uniffi-bindgen-bin";
+		};
+		DA3BA63E0FFA3032C817C70B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CFFC2D8029356A16B09E5B1 /* Shared */;
+			proxyType = 2;
+			remoteGlobalIDString = CA02FA85CE9E8109328FB0D5;
+			remoteInfo = "uniffi-bindgen-bin";
+		};
+		EE67217BAC79C28FF77EAEFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CFFC2D8029356A16B09E5B1 /* Shared */;
+			proxyType = 1;
+			remoteGlobalIDString = CA0049BF7D4FD346A0A05154;
+			remoteInfo = "shared-staticlib";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		07415664340CDEE3355A9A8C /* shared.udl */ = {isa = PBXFileReference; lastKnownFileType = text; path = shared.udl; sourceTree = "<group>"; };
+		5B0D4CE3F9D85BE0FE6A1816 /* SharedTypes */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SharedTypes; path = ../shared_types/generated/swift/SharedTypes; sourceTree = SOURCE_ROOT; };
+		77ADFD9A2B485B3A004F8CD1 /* ConfigureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureView.swift; sourceTree = "<group>"; };
+		77ADFD9C2B485F14004F8CD1 /* PracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeView.swift; sourceTree = "<group>"; };
+		874B8EA9E22ED3C432F214BE /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		8CFFC2D8029356A16B09E5B1 /* Shared */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Shared; path = ../shared/shared.xcodeproj; sourceTree = "<group>"; };
+		C4406F79F227F3BE8A7F8D8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D656EB27C269D0A8D05B36AC /* AnimalHunt.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AnimalHunt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECB95AAECFBC7EA021D44EB1 /* Core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
+		EF605E1934C7FE163361C7EC /* AnimalHuntApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimalHuntApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		ACAC9A4F073998F4F509448A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD1E92F95F890466D29E27C7 /* libshared_static.a in Frameworks */,
+				CDA07C46E2CB5D58E31D798F /* SharedTypes in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6E21DA8217279DD6F145756B /* AnimalHunt */ = {
+			isa = PBXGroup;
+			children = (
+				EF605E1934C7FE163361C7EC /* AnimalHuntApp.swift */,
+				ECB95AAECFBC7EA021D44EB1 /* Core.swift */,
+				C4406F79F227F3BE8A7F8D8D /* Info.plist */,
+				874B8EA9E22ED3C432F214BE /* RootView.swift */,
+				77ADFD9A2B485B3A004F8CD1 /* ConfigureView.swift */,
+				77ADFD9C2B485F14004F8CD1 /* PracticeView.swift */,
+			);
+			path = AnimalHunt;
+			sourceTree = "<group>";
+		};
+		7E403622541F8C5B8FA2AC10 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ED281E0947426D19FB3CFFE9 /* libshared_static.a */,
+				770AFBFB2B481AD4009E7DD5 /* shared.dylib */,
+				62CCF4A11838C31389379E2F /* uniffi-bindgen */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		81C4CB8FDCF53FC278A602EB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D656EB27C269D0A8D05B36AC /* AnimalHunt.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B4CE785109726044BAB457CE /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				5B0D4CE3F9D85BE0FE6A1816 /* SharedTypes */,
+			);
+			name = Packages;
+			sourceTree = SOURCE_ROOT;
+		};
+		D0F531FCB59784C977F530F6 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				07415664340CDEE3355A9A8C /* shared.udl */,
+			);
+			name = src;
+			path = ../shared/src;
+			sourceTree = "<group>";
+		};
+		DA38462BD77AA16CC10D675B = {
+			isa = PBXGroup;
+			children = (
+				6E21DA8217279DD6F145756B /* AnimalHunt */,
+				B4CE785109726044BAB457CE /* Packages */,
+				D0F531FCB59784C977F530F6 /* src */,
+				81C4CB8FDCF53FC278A602EB /* Products */,
+				E03DD343BE3172638303A076 /* Projects */,
+			);
+			sourceTree = "<group>";
+		};
+		E03DD343BE3172638303A076 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				8CFFC2D8029356A16B09E5B1 /* Shared */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		60E8993CAA94EFEB9E2E5DF6 /* AnimalHunt */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC25E697FD1431D094E57D99 /* Build configuration list for PBXNativeTarget "AnimalHunt" */;
+			buildPhases = (
+				081EA3EDBC342508C78BA030 /* Sources */,
+				834BDBEF6A389578A08E7B5B /* Resources */,
+				ACAC9A4F073998F4F509448A /* Frameworks */,
+			);
+			buildRules = (
+				56D205D07FD808B748112C07 /* PBXBuildRule */,
+			);
+			dependencies = (
+				F505E2572FE9737744497810 /* PBXTargetDependency */,
+				572FE1C839E8A5A992E8E655 /* PBXTargetDependency */,
+			);
+			name = AnimalHunt;
+			packageProductDependencies = (
+				255E22EF7C6956A03CE8BCDF /* SharedTypes */,
+			);
+			productName = AnimalHunt;
+			productReference = D656EB27C269D0A8D05B36AC /* AnimalHunt.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FB17884351DEF58B63030E6C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = B5E49E3763AF77BA7985BF5D /* Build configuration list for PBXProject "AnimalHunt" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = DA38462BD77AA16CC10D675B;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7E403622541F8C5B8FA2AC10 /* Products */;
+					ProjectRef = 8CFFC2D8029356A16B09E5B1 /* Shared */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				60E8993CAA94EFEB9E2E5DF6 /* AnimalHunt */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		62CCF4A11838C31389379E2F /* uniffi-bindgen */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "uniffi-bindgen";
+			remoteRef = DA3BA63E0FFA3032C817C70B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		770AFBFB2B481AD4009E7DD5 /* shared.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = shared.dylib;
+			remoteRef = 770AFBFA2B481AD4009E7DD5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ED281E0947426D19FB3CFFE9 /* libshared_static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libshared_static.a;
+			remoteRef = A8C132A54E305CA009095696 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		834BDBEF6A389578A08E7B5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76B33116918A389254EF2F1D /* uniffi-bindgen in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		081EA3EDBC342508C78BA030 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7275D096B266775F36C57860 /* AnimalHuntApp.swift in Sources */,
+				77ADFD9D2B485F14004F8CD1 /* PracticeView.swift in Sources */,
+				E81F87DFECCFFC630B6CD5DD /* Core.swift in Sources */,
+				77ADFD9B2B485B3A004F8CD1 /* ConfigureView.swift in Sources */,
+				5118A570EF1DCBBB68276C8B /* RootView.swift in Sources */,
+				8F12402F6C22A6C14D378846 /* shared.udl in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		572FE1C839E8A5A992E8E655 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "shared-staticlib";
+			targetProxy = EE67217BAC79C28FF77EAEFE /* PBXContainerItemProxy */;
+		};
+		F505E2572FE9737744497810 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "uniffi-bindgen-bin";
+			targetProxy = B49CF779E5B350D5072C1C18 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		43E7365302C722A92CE88FB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7E4CCFD42C76C52401E8E335 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				INFOPLIST_FILE = AnimalHunt/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-w",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.red-badger.AnimalHunt";
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = generated/sharedFFI.h;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C9931F836AE5295D10185007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E4A966E731847563B1FFCAC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				INFOPLIST_FILE = AnimalHunt/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-w",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.red-badger.AnimalHunt";
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = generated/sharedFFI.h;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B5E49E3763AF77BA7985BF5D /* Build configuration list for PBXProject "AnimalHunt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43E7365302C722A92CE88FB2 /* Debug */,
+				C9931F836AE5295D10185007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CC25E697FD1431D094E57D99 /* Build configuration list for PBXNativeTarget "AnimalHunt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7E4CCFD42C76C52401E8E335 /* Debug */,
+				E4A966E731847563B1FFCAC3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		255E22EF7C6956A03CE8BCDF /* SharedTypes */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SharedTypes;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = FB17884351DEF58B63030E6C /* Project object */;
+}
