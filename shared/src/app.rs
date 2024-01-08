@@ -36,17 +36,27 @@ pub enum Mode {
     // Play,
 }
 
+#[derive(Debug)]
 pub enum Model {
-    Practice(Option<Animal>),
-    Configure,
+    Practice {
+        animal: Option<Animal>,
+        error: Option<String>,
+    },
+    Configure {
+        error: Option<String>,
+    },
 }
 
 impl Default for Model {
     fn default() -> Self {
-        Model::Practice(None)
+        Model::Practice {
+            animal: None,
+            error: None,
+        }
     }
 }
 
+#[derive(Debug)]
 pub struct Animal {
     idx: usize,
 }
@@ -86,9 +96,11 @@ impl Animal {
 pub enum ViewModel {
     Practice {
         animal_emoji: String,
+        error: Option<String>,
     },
     Configure {
         known_animals: Vec<(String, String)>,
+        error: Option<String>,
     },
 }
 
@@ -111,42 +123,57 @@ impl App for AnimalHunt {
 
     fn update(&self, event: Self::Event, model: &mut Self::Model, caps: &Self::Capabilities) {
         match model {
-            Model::Practice(_) => match event {
+            Model::Practice {
+                animal: _,
+                error: _,
+            } => match event {
                 Event::SetMode(Mode::Configure) => {
-                    *model = Model::Configure;
+                    *model = Model::Configure { error: None };
                 }
                 Event::SetMode(Mode::Practice) => (),
                 Event::Scan => {
                     caps.tag_reader.read_url(Event::ScannedUrl);
                 }
                 Event::ScannedUrl(TagReaderOutput::Url(url_string)) => {
-                    match Animal::from_url(&url_string) {
-                        Ok(animal) => *model = Model::Practice(Some(animal)),
-                        Err(e) => panic!("Invalid url {e}"), // TODO error handling
+                    *model = match Animal::from_url(&url_string) {
+                        Ok(animal) => Model::Practice {
+                            animal: Some(animal),
+                            error: None,
+                        },
+                        Err(e) => Model::Practice {
+                            animal: None,
+                            error: Some(e.to_string()),
+                        },
                     }
                 }
-                Event::TagWritten(TagReaderOutput::Error(err))
-                | Event::ScannedUrl(TagReaderOutput::Error(err)) => {
-                    panic!("Error reading tag {err}")
+                Event::ScannedUrl(TagReaderOutput::Error(err)) => {
+                    *model = Model::Practice {
+                        animal: None,
+                        error: Some(format!("Error reading tag: {err}")),
+                    };
                 }
                 Event::WriteTag(_)
                 | Event::TagWritten(_)
                 | Event::ScannedUrl(TagReaderOutput::Written) => {
-                    panic!("Invalid event for Practice mode")
+                    unreachable!("Invalid event for Practice mode")
                 }
             },
-            Model::Configure => match event {
+            Model::Configure { error: _ } => match event {
                 Event::SetMode(Mode::Practice) | Event::TagWritten(TagReaderOutput::Written) => {
-                    *model = Model::Practice(None);
+                    *model = Model::Practice {
+                        animal: None,
+                        error: None,
+                    };
                 }
                 Event::SetMode(Mode::Configure) => (),
                 Event::WriteTag(animal) => {
                     let url = format!("https://{}/animal/{}", HOST, animal);
                     caps.tag_reader.write_url(&url, Event::TagWritten);
                 }
-                Event::TagWritten(TagReaderOutput::Error(err))
-                | Event::ScannedUrl(TagReaderOutput::Error(err)) => {
-                    panic!("Error writing tag {err}")
+                Event::TagWritten(TagReaderOutput::Error(err)) => {
+                    *model = Model::Configure {
+                        error: Some(format!("Error writing tag: {err}")),
+                    };
                 }
                 Event::Scan | Event::ScannedUrl(_) | Event::TagWritten(TagReaderOutput::Url(_)) => {
                     panic!("Invalid event for Configure mode");
@@ -159,19 +186,22 @@ impl App for AnimalHunt {
 
     fn view(&self, model: &Self::Model) -> Self::ViewModel {
         match model {
-            Model::Practice(animal) => match animal {
+            Model::Practice { animal, error } => match animal {
                 Some(animal) => ViewModel::Practice {
                     animal_emoji: animal.emoji().to_string(),
+                    error: error.clone(),
                 },
                 None => ViewModel::Practice {
                     animal_emoji: "?".to_string(),
+                    error: error.clone(),
                 },
             },
-            Model::Configure => ViewModel::Configure {
+            Model::Configure { error } => ViewModel::Configure {
                 known_animals: ANIMALS
                     .iter()
                     .map(|(name, emoji)| (name.to_string(), emoji.to_string()))
                     .collect(),
+                error: error.clone(),
             },
         }
     }
@@ -184,6 +214,7 @@ mod tests {
     use crux_core::{assert_effect, testing::AppTester};
 
     use crate::{
+        app::ANIMALS,
         capabilities::tag_reader::{TagReaderOperation, TagReaderOutput},
         AnimalHunt,
     };
@@ -192,11 +223,15 @@ mod tests {
 
     #[test]
     fn starts_with_no_animal() {
-        let model = Model::Practice(None);
+        let model = Model::Practice {
+            animal: None,
+            error: None,
+        };
         let app: AppTester<AnimalHunt, Effect> = Default::default();
 
         let expected = ViewModel::Practice {
             animal_emoji: "?".to_string(),
+            error: None,
         };
         let actual = app.view(&model);
 
@@ -205,7 +240,10 @@ mod tests {
 
     #[test]
     fn scans_an_animal() -> anyhow::Result<()> {
-        let mut model = Model::Practice(None);
+        let mut model = Model::Practice {
+            animal: None,
+            error: None,
+        };
         let app: AppTester<AnimalHunt, Effect> = Default::default();
 
         let update = app.update(Event::Scan, &mut model);
@@ -228,6 +266,7 @@ mod tests {
 
         let expected = ViewModel::Practice {
             animal_emoji: "🦡".to_string(),
+            error: None,
         };
         let actual = app.view(&model);
 
@@ -238,14 +277,15 @@ mod tests {
 
     #[test]
     fn writes_an_animal() -> anyhow::Result<()> {
-        let mut model = Model::Configure;
+        let mut model = Model::Configure { error: None };
         let app: AppTester<AnimalHunt, Effect> = Default::default();
 
         let expected = ViewModel::Configure {
-            known_animals: vec![
-                ("crocodile".to_string(), "🐊".to_string()),
-                ("badger".to_string(), "🦡".to_string()),
-            ],
+            known_animals: ANIMALS
+                .iter()
+                .map(|(n, e)| (n.to_string(), e.to_string()))
+                .collect(),
+            error: None,
         };
         let actual = app.view(&model);
 
@@ -266,11 +306,79 @@ mod tests {
 
         let expected = ViewModel::Practice {
             animal_emoji: "?".to_string(),
+            error: None,
         };
         let actual = app.view(&model);
 
         assert_eq!(actual, expected);
 
         Ok(())
+    }
+
+    #[test]
+    fn shows_practice_error() {
+        let mut model = Model::Practice {
+            animal: None,
+            error: None,
+        };
+        let app: AppTester<AnimalHunt, Effect> = Default::default();
+
+        let update = app.update(Event::Scan, &mut model);
+        let mut requests = update.into_effects().filter_map(Effect::into_tag_reader);
+
+        let mut request = requests.next().unwrap();
+        assert_let!(TagReaderOperation::ReadUrl, request.operation.clone());
+
+        let update = app
+            .resolve(
+                &mut request,
+                TagReaderOutput::Error("some error".to_string()),
+            )
+            .unwrap();
+        let update = app.update(update.events[0].clone(), &mut model);
+
+        assert_effect!(update, Effect::Render(_));
+
+        let expected = ViewModel::Practice {
+            animal_emoji: "?".to_string(),
+            error: Some("Error reading tag: some error".to_string()),
+        };
+        let actual = app.view(&model);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn shows_configuration_errors() {
+        let mut model = Model::Configure { error: None };
+        let app: AppTester<AnimalHunt, Effect> = Default::default();
+
+        let update = app.update(Event::WriteTag("badger".to_string()), &mut model);
+        let mut requests = update.into_effects().filter_map(Effect::into_tag_reader);
+
+        let mut request = requests.next().unwrap();
+        assert_let!(TagReaderOperation::WriteUrl(_), request.operation.clone());
+
+        let update = app
+            .resolve(
+                &mut request,
+                TagReaderOutput::Error("some error".to_string()),
+            )
+            .unwrap();
+
+        let update = app.update(update.events[0].clone(), &mut model);
+
+        assert_effect!(update, Effect::Render(_));
+
+        let expected = ViewModel::Configure {
+            known_animals: ANIMALS
+                .iter()
+                .map(|(n, e)| (n.to_string(), e.to_string()))
+                .collect(),
+            error: Some("Error writing tag: some error".to_string()),
+        };
+        let actual = app.view(&model);
+
+        assert_eq!(actual, expected);
     }
 }

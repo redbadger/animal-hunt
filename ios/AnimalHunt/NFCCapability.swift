@@ -31,7 +31,7 @@ class NFCCapability: NSObject {
             case .success():
                 return .written
             case let .failure(e):
-                return .error("NFC write failed") // TODO pass error message
+                return .error(String.init(format: "NFC write failed %@", e.localizedDescription))
             }
         case .readUrl:
             guard NFCNDEFReaderSession.readingAvailable else {
@@ -44,7 +44,7 @@ class NFCCapability: NSObject {
             case let .success(url):
                 return .url(url)
             case let .failure(e):
-                return .error("NFC read failed") // TODO pass error message
+                return .error(String.init(format: "NFC read failed %@", e.localizedDescription))
             }
         }
     }
@@ -56,7 +56,7 @@ class NFCReadTransaction: NSObject {
     private var continuation: CheckedContinuation<Result<String, NFCCapabilityError> , Never>?
 
     func commit() async -> Result<String, NFCCapabilityError> {
-        self.readerSession = NFCNDEFReaderSession(delegate: self, queue: DispatchQueue.main, invalidateAfterFirstRead: true)
+        self.readerSession = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
         readerSession?.alertMessage = "Move the top of your iPhone close to the tag"
 
         return await withCheckedContinuation { continuation in
@@ -68,7 +68,7 @@ class NFCReadTransaction: NSObject {
     }
 
     func complete(url: String) {
-        readerSession?
+        readerSession?.invalidate()
         print("Session complete (success)")
 
         continuation?.resume(returning: .success(url))
@@ -101,37 +101,21 @@ extension NFCReadTransaction: NFCNDEFReaderSessionDelegate {
     }
 
     func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
-        print("NDEF Message!")
-    }
+        print("NDEF Messages!", messages)
 
-    func readerSession(_ session: NFCNDEFReaderSession, didDetect tags: [NFCNDEFTag]) {
-        if tags.count > 1 {
-            fail(.tooManyTagsDetected)
+        if messages.count > 1 {
+            return fail(.tooManyTagsDetected)
         }
 
-        let tag = tags[0]
+        for record in messages[0].records {
+            if let url = record.wellKnownTypeURIPayload() {
+                session.alertMessage = "Tag read!"
 
-        session.connect(to: tag) { error in
-            if let error {
-                return self.fail(.tagConnectionError(error))
-            }
-
-            tag.readNDEF { message, error in
-                if let error {
-                    return self.fail(.tagReadError(error))
-                }
-
-                for record in message?.records ?? [] {
-                    if let url = record.wellKnownTypeURIPayload() {
-                        session.alertMessage = "Tag read!"
-
-                        return self.complete(url: url.absoluteString)
-                    }
-                }
-
-                self.fail(.unsupportedTagType)
+                return self.complete(url: url.absoluteString)
             }
         }
+
+        self.fail(.unsupportedTagType)
     }
 }
 
@@ -157,7 +141,7 @@ class NFCWriteTransaction: NSObject {
             return .failure(.malformedURL)
         }
 
-        self.readerSession = NFCNDEFReaderSession(delegate: self, queue: DispatchQueue.main, invalidateAfterFirstRead: false)
+        self.readerSession = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
         readerSession?.alertMessage = "Move the top of your iPhone close to the tag"
 
         ndefMessage = NFCNDEFMessage(records: [payload])

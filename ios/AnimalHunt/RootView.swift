@@ -23,29 +23,35 @@ struct RootView: View {
         )
     }
     private var animalEmoji: String {
-        if case let .practice(animalEmoji) = core.view {
+        if case let .practice(animalEmoji, _) = core.view {
             return animalEmoji
         } else {
             return "?"
         }
     }
     private var knownAnimals: [[String]] {
-        guard case let .configure(animals) = core.view else {
+        guard case let .configure(animals, _) = core.view else {
             return [];
         }
 
         return animals
     }
+    private var error: String? {
+        switch core.view {
+        case let .practice(_, error):
+            return error
+        case let .configure(_, error):
+            return error
+        }
+    }
 
     var body: some View {
-
-
         NavigationStack {
-            PracticeView(animalEmoji: animalEmoji)
+            PracticeView(animalEmoji: animalEmoji, error: error)
                 .sheet(isPresented: configuring) {
 
                     AnyView(NavigationStack {
-                        ConfigureView(animals: knownAnimals)
+                        ConfigureView(animals: knownAnimals, error: error)
                     })
                 }
         }

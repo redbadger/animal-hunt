@@ -58,11 +58,11 @@ where
             let url = url_string.to_string();
 
             async move {
-                context
+                let result = context
                     .request_from_shell(TagReaderOperation::WriteUrl(url))
                     .await;
 
-                context.update_app(make_event(TagReaderOutput::Written));
+                context.update_app(make_event(result));
             }
         })
     }
