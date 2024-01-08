@@ -37,20 +37,24 @@ struct PracticeView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(hue: 0, saturation: 0, brightness: 0.95))
 
-            if error != nil {
-                Text(error ?? "")
-                    .transition(
-                        AnyTransition.asymmetric(insertion: .push(from: .bottom), removal: .opacity)
-                    )
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 25)
-                    .padding(.vertical, 10)
-                    .background(.red)
-                    .cornerRadius(20)
-                    .padding(10)
+            if let err = error {
+                Button {
+                    update(.dismissError)
+                } label: {
+                    Text(err)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 25)
+                        .padding(.vertical, 10)
+                        .background(.red)
+                        .cornerRadius(20)
+                        .padding(10)
+                }
+                .transition(
+                   AnyTransition.push(from: .bottom)
+                )
             }
         }
-        .animation(.bouncy(duration: 0.3, extraBounce: 0.2), value: error)
+        .animation(.bouncy(duration: 0.6, extraBounce: 0.2), value: error)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Practice")
         .toolbar() {

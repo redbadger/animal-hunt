@@ -27,6 +27,7 @@ pub enum Event {
     ScannedUrl(TagReaderOutput),
     WriteTag(String),
     TagWritten(TagReaderOutput),
+    DismissError,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -130,7 +131,14 @@ impl App for AnimalHunt {
                 Event::SetMode(Mode::Configure) => {
                     *model = Model::Configure { error: None };
                 }
-                Event::SetMode(Mode::Practice) => (),
+                Event::SetMode(Mode::Practice)
+                | Event::ScannedUrl(TagReaderOutput::Cancelled)
+                | Event::DismissError => {
+                    *model = Model::Practice {
+                        animal: None,
+                        error: None,
+                    };
+                }
                 Event::Scan => {
                     caps.tag_reader.read_url(Event::ScannedUrl);
                 }
@@ -165,7 +173,11 @@ impl App for AnimalHunt {
                         error: None,
                     };
                 }
-                Event::SetMode(Mode::Configure) => (),
+                Event::SetMode(Mode::Configure)
+                | Event::TagWritten(TagReaderOutput::Cancelled)
+                | Event::DismissError => {
+                    *model = Model::Configure { error: None };
+                }
                 Event::WriteTag(animal) => {
                     let url = format!("https://{}/animal/{}", HOST, animal);
                     caps.tag_reader.write_url(&url, Event::TagWritten);

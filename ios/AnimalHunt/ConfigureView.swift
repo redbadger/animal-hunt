@@ -28,16 +28,21 @@ struct ConfigureView: View {
                 }
             }
 
-            if let error {
-                Text(error)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 25)
-                    .padding(.vertical, 10)
-                    .background(.red)
-                    .cornerRadius(20)
-                    .padding(10)
-                    .transition(AnyTransition.push(from: .leading))
-                    .animation(.easeInOut, value: error)
+            if let err = error {
+                Button {
+                    update(.dismissError)
+                } label: {
+                    Text(err)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 25)
+                        .padding(.vertical, 10)
+                        .background(.red)
+                        .cornerRadius(20)
+                        .padding(10)
+                }
+                .transition(
+                   AnyTransition.push(from: .bottom)
+                )
             }
         }
             .animation(.bouncy(duration: 0.3, extraBounce: 0.2), value: error)
@@ -46,7 +51,6 @@ struct ConfigureView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction){
                     Button("Close") {
-                        print("Close pressed")
                         presentation.wrappedValue.dismiss()
                     }
                 }

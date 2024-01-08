@@ -31,7 +31,7 @@ class NFCCapability: NSObject {
             case .success():
                 return .written
             case let .failure(e):
-                return .error(String.init(format: "NFC write failed %@", e.localizedDescription))
+                return mapError(e)
             }
         case .readUrl:
             guard NFCNDEFReaderSession.readingAvailable else {
@@ -44,9 +44,23 @@ class NFCCapability: NSObject {
             case let .success(url):
                 return .url(url)
             case let .failure(e):
-                return .error(String.init(format: "NFC read failed %@", e.localizedDescription))
+                return mapError(e)
             }
         }
+    }
+
+    private static func mapError(_ error: NFCCapabilityError) -> TagReaderOutput {
+        if case let .nfcSessionError(e) = error {
+            if let nfcError = e as? NFCReaderError {
+                if nfcError.code == .readerSessionInvalidationErrorUserCanceled ||
+                    nfcError.code == .readerSessionInvalidationErrorSessionTimeout {
+
+                    return .cancelled
+                }
+            }
+        }
+
+        return .error(String.init(format: "NFC read failed %@", error.localizedDescription))
     }
 }
 
@@ -63,20 +77,17 @@ class NFCReadTransaction: NSObject {
             self.continuation = continuation
 
             readerSession?.begin()
-            print("Session started")
         }
     }
 
     func complete(url: String) {
         readerSession?.invalidate()
-        print("Session complete (success)")
 
         continuation?.resume(returning: .success(url))
     }
 
     func fail(_ e: NFCCapabilityError) {
         readerSession?.invalidate()
-        print("Session complete (failure)")
 
         continuation?.resume(returning: .failure(e))
     }
@@ -85,23 +96,13 @@ class NFCReadTransaction: NSObject {
 
 extension NFCReadTransaction: NFCNDEFReaderSessionDelegate {
     func readerSessionDidBecomeActive(_ session: NFCNDEFReaderSession) {
-        print("Session active")
     }
 
     func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
-        if let nfcError = error as? NFCReaderError {
-            if nfcError.code == .readerSessionInvalidationErrorUserCanceled ||
-                nfcError.code == .readerSessionInvalidationErrorSessionTimeout {
-                
-                return complete(url: "https://animal-hunt.red-badger.com/animal/unknown") // FIXME error handling
-            }
-        }
-
         fail(.nfcSessionError(error))
     }
 
     func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
-        print("NDEF Messages!", messages)
 
         if messages.count > 1 {
             return fail(.tooManyTagsDetected)
@@ -173,8 +174,6 @@ class NFCWriteTransaction: NSObject {
                 return self.fail(.tagConnectionError(error))
             }
 
-            print("Connection to tag sucessful")
-
             nfcTag.queryNDEFStatus { status, capacity, error in
                 if let error {
                     return self.fail(.tagStatusError(error))
@@ -205,13 +204,6 @@ class NFCWriteTransaction: NSObject {
 extension NFCWriteTransaction: NFCNDEFReaderSessionDelegate {
 
     func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
-        if let nfcError = error as? NFCReaderError {
-            if nfcError.code == .readerSessionInvalidationErrorUserCanceled ||
-                nfcError.code == .readerSessionInvalidationErrorSessionTimeout {
-                return complete()
-            }
-        }
-
         fail(.nfcSessionError(error))
     }
 
