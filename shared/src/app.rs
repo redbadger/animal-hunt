@@ -6,8 +6,20 @@ use url::Url;
 
 use crate::capabilities::tag_reader::{TagReader, TagReaderOutput};
 
-static ANIMALS: [(&str, &str); 2] = [("crocodile", "🐊"), ("badger", "🦡")];
 static HOST: &str = "animal-hunt.red-badger.com";
+static ANIMALS: [(&str, &str); 10] = [
+    ("crocodile", "🐊"),
+    ("badger", "🦡"),
+    ("sloth", "🦥"),
+    ("kangaroo", "🦘"),
+    ("pig", "🐖"),
+    ("dolphin", "🐬"),
+    ("zebra", "🦓"),
+    ("giraffe", "🦒"),
+    ("mouse", "🐁"),
+    ("flamingo", "🦩"),
+];
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Event {
     SetMode(Mode),
