@@ -18,13 +18,16 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>This app uses NFC to read and write tags to use them as animal tokens.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>NFCReaderUsageDescription</key>
-	<string>Reads and writes NFC tags to use as animal tokens</string>
 </dict>
 </plist>
