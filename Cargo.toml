@@ -1,5 +1,5 @@
 [workspace]
-members = ["shared", "shared_types"]
+members = ["shared", "shared_types", "server"]
 resolver = "1"
 
 [workspace.package]
