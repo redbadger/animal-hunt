@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [""],
+        "components": {
+          "/animal/*": {
+            "comment": "Matches any animal tag URL (URL whose path starts with /animal/)"
+          }
+        }
+      }
+    ]
+  }
+}

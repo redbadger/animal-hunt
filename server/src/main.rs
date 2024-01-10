@@ -1,12 +1,25 @@
-use axum::{routing::get, Router};
+use axum::{extract::Path, routing::get, Router};
 
-async fn hello_world() -> &'static str {
-    "Hello, world! Happy hunting!"
+async fn landing_page() -> &'static str {
+    "Hello, World! Happy hunting!"
 }
 
-#[shuttle_runtime::main]
-async fn main() -> shuttle_axum::ShuttleAxum {
-    let router = Router::new().route("/", get(hello_world));
+async fn animal_page(Path(animal): Path<String>) -> String {
+    format!("You found a {}! Congrats!", animal)
+}
 
-    Ok(router.into())
+#[tokio::main]
+async fn main() {
+    // build our application with a single route
+    let app = Router::new()
+        .route("/", get(landing_page))
+        .route("/animal/:animal", get(animal_page))
+        .route(
+            "/apple-app-site-association",
+            get(|| async { include_str!("../public/apple-app-site-association") }),
+        );
+
+    // run our app with hyper, listening globally on port 8080
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
