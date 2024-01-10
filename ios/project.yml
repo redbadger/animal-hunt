@@ -18,6 +18,8 @@ targets:
       path: AnimalHunt/AnimalHunt.entitlements
       properties:
         com.apple.developer.nfc.readersession.formats: ["TAG"]
+        com.apple.developer.associated-domains:
+          ["applinks:animal-hunt.red-badger.com"]
     sources:
       - AnimalHunt
       - path: ../shared/src/shared.udl
