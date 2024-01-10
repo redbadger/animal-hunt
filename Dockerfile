@@ -18,8 +18,12 @@ RUN adduser \
 
 WORKDIR /app
 
-COPY ./ .
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./shared ./shared
+COPY ./shared_types ./shared_types
+COPY ./server ./server
 
+WORKDIR /app/server
 RUN cargo build --release
 
 ####################################################################################################

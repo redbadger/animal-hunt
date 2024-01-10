@@ -2,12 +2,13 @@
   "applinks": {
     "details": [
       {
-        "appIDs": [""],
-        "components": {
-          "/animal/*": {
+        "appIDs": ["E5DS2C9C62.com.red-badger.AnimalHunt"],
+        "components": [
+          {
+            "/": "/animal/*",
             "comment": "Matches any animal tag URL (URL whose path starts with /animal/)"
           }
-        }
+        ]
       }
     ]
   }

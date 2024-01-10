@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 axum = "0.7.3"
 tokio = { version = "1.28.2", features = ["full"] }
+shared = { path = "../shared" }
