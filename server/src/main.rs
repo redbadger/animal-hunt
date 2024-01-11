@@ -1,41 +1,9 @@
-use axum::{
-    extract::{Path, State},
-    http::{header, StatusCode},
-    response::IntoResponse,
-    routing::get,
-    Json, Router,
-};
+mod pages;
+
+use axum::{routing::get, Router};
 use shared::{AnimalHunt, Capabilities, Core, Effect, Event, Mode, ViewModel};
 
-async fn landing_page() -> &'static str {
-    "Hello, World! Happy hunting!"
-}
-
-async fn animal_page(
-    Path(animal): Path<String>,
-    State(state): State<Vec<(String, String)>>,
-) -> (StatusCode, String) {
-    state
-        .iter()
-        .find(|(name, _)| name.to_lowercase() == animal.to_lowercase())
-        .map(|(name, emoji)| {
-            (
-                StatusCode::OK,
-                format!("You found a {}: {}! Congrats!", name, emoji),
-            )
-        })
-        .unwrap_or((
-            StatusCode::NOT_FOUND,
-            "Sorry, I don't know that animal".to_string(),
-        ))
-}
-
-async fn apple_app_site_association() -> impl IntoResponse {
-    (
-        [(header::CONTENT_TYPE, "application/json")],
-        include_str!("../public/apple-app-site-association.json"),
-    )
-}
+use pages::{animal_page, apple_app_site_association, landing_page};
 
 #[tokio::main]
 async fn main() {
@@ -53,6 +21,10 @@ async fn main() {
         .route(
             "/.well-known/apple-app-site-association",
             get(apple_app_site_association),
+        )
+        .route(
+            "/robots.txt",
+            get(|| async { "User-agent: *\nDisallow: /" }),
         )
         .with_state(animals);
 
